@@ -1,0 +1,35 @@
+/* Flash red animation for countdown alert */
+@keyframes flash-red {
+  0%, 100% {
+    background-color: rgb(31, 41, 55); /* bg-gray-800 */
+    border-color: rgb(55, 65, 81);     /* border-gray-700 */
+  }
+  50% {
+    background-color: rgb(185, 28, 28); /* bg-red-700 */
+    border-color: rgb(220, 38, 38);     /* border-red-600 */
+  }
+}
+
+.flash-red {
+  animation: flash-red 0.8s ease-in-out infinite;
+}
+
+/* Screen-reader-only: visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Ensure number input spinners are visible */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}

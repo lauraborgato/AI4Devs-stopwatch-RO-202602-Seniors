@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timer and Countdown</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center py-8 px-4">
+  <h1 class="text-3xl font-bold mb-8">Timer and Countdown</h1>
+  <p id="sr-timer-live" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+
+  <!-- Mode Tabs -->
+  <nav role="tablist" aria-label="Timer mode" class="flex gap-2 mb-8">
+    <button
+      id="tab-stopwatch"
+      role="tab"
+      aria-selected="true"
+      aria-controls="panel-stopwatch"
+      tabindex="0"
+      class="tab-btn px-6 py-2 rounded-full text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors bg-blue-500 text-white"
+    >
+      Stopwatch
+    </button>
+    <button
+      id="tab-countdown"
+      role="tab"
+      aria-selected="false"
+      aria-controls="panel-countdown"
+      tabindex="-1"
+      class="tab-btn px-6 py-2 rounded-full text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors bg-gray-700 text-gray-300"
+    >
+      Countdown
+    </button>
+  </nav>
+
+  <!-- Stopwatch Panel -->
+  <section
+    id="panel-stopwatch"
+    role="tabpanel"
+    aria-labelledby="tab-stopwatch"
+    class="w-full max-w-lg flex flex-col items-center"
+  >
+    <!-- Time Display -->
+    <div class="bg-gray-800 rounded-2xl px-8 py-6 mb-6 w-full text-center shadow-lg border border-gray-700">
+      <time
+        id="stopwatch-display"
+        aria-live="off"
+        aria-label="Stopwatch time"
+        class="font-mono text-5xl sm:text-6xl md:text-7xl font-bold text-white tracking-wider"
+      >
+        00:00:00<span class="text-2xl sm:text-3xl text-gray-400">.000</span>
+      </time>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-6 w-full sm:w-auto">
+      <button
+        id="sw-start-btn"
+        aria-label="Start stopwatch"
+        aria-pressed="false"
+        class="px-8 py-3 rounded-xl text-xl font-bold bg-green-500 hover:bg-green-600 text-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors min-w-[120px]"
+      >
+        Start
+      </button>
+      <button
+        id="sw-lap-btn"
+        aria-label="Record lap"
+        class="hidden px-8 py-3 rounded-xl text-xl font-bold bg-blue-500 hover:bg-blue-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors min-w-[120px]"
+      >
+        Lap
+      </button>
+      <button
+        id="sw-reset-btn"
+        aria-label="Reset stopwatch"
+        class="px-8 py-3 rounded-xl text-xl font-bold bg-red-500 hover:bg-red-600 text-white focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors min-w-[120px]"
+      >
+        Reset
+      </button>
+    </div>
+
+    <!-- Laps -->
+    <section id="sw-laps" class="w-full max-h-60 overflow-y-auto" aria-label="Lap times"></section>
+  </section>
+
+  <!-- Countdown Panel -->
+  <section
+    id="panel-countdown"
+    role="tabpanel"
+    aria-labelledby="tab-countdown"
+    class="w-full max-w-lg flex flex-col items-center hidden"
+  >
+    <!-- Input View -->
+    <div id="cd-input-view" class="flex flex-col items-center w-full">
+      <div class="flex gap-2 items-center mb-4">
+        <div class="flex flex-col items-center">
+          <label for="cd-hours" class="text-sm text-gray-400 mb-1">Hours</label>
+          <input
+            id="cd-hours"
+            type="number"
+            min="0"
+            max="99"
+            value="0"
+            aria-label="Hours"
+            class="w-20 text-center bg-gray-800 border border-gray-600 rounded-lg py-3 text-2xl font-mono text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          >
+        </div>
+        <span class="text-3xl font-bold text-gray-400 mt-5">:</span>
+        <div class="flex flex-col items-center">
+          <label for="cd-minutes" class="text-sm text-gray-400 mb-1">Minutes</label>
+          <input
+            id="cd-minutes"
+            type="number"
+            min="0"
+            max="59"
+            value="0"
+            aria-label="Minutes"
+            class="w-20 text-center bg-gray-800 border border-gray-600 rounded-lg py-3 text-2xl font-mono text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          >
+        </div>
+        <span class="text-3xl font-bold text-gray-400 mt-5">:</span>
+        <div class="flex flex-col items-center">
+          <label for="cd-seconds" class="text-sm text-gray-400 mb-1">Seconds</label>
+          <input
+            id="cd-seconds"
+            type="number"
+            min="0"
+            max="59"
+            value="0"
+            aria-label="Seconds"
+            class="w-20 text-center bg-gray-800 border border-gray-600 rounded-lg py-3 text-2xl font-mono text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          >
+        </div>
+      </div>
+
+      <!-- Quick Presets -->
+      <div class="flex flex-wrap gap-2 mb-6 justify-center">
+        <button
+          aria-label="Set 1 minute countdown"
+          class="cd-preset px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors"
+          data-minutes="1"
+        >
+          1 min
+        </button>
+        <button
+          aria-label="Set 5 minute countdown"
+          class="cd-preset px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors"
+          data-minutes="5"
+        >
+          5 min
+        </button>
+        <button
+          aria-label="Set 10 minute countdown"
+          class="cd-preset px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors"
+          data-minutes="10"
+        >
+          10 min
+        </button>
+        <button
+          aria-label="Set 15 minute countdown"
+          class="cd-preset px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors"
+          data-minutes="15"
+        >
+          15 min
+        </button>
+      </div>
+    </div>
+
+    <!-- Countdown Display -->
+    <div id="cd-display-view" class="hidden flex flex-col items-center w-full">
+      <div id="cd-display-container" class="bg-gray-800 rounded-2xl px-8 py-6 mb-4 w-full text-center shadow-lg border border-gray-700">
+        <time
+          id="countdown-display"
+          aria-live="off"
+          aria-label="Countdown time"
+          class="font-mono text-5xl sm:text-6xl md:text-7xl font-bold text-white tracking-wider"
+        >
+          00:00:00
+        </time>
+      </div>
+      <p id="cd-timesup" class="hidden text-2xl font-bold text-red-400 mb-4">Time's up!</p>
+    </div>
+
+    <!-- Countdown Buttons -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-6 w-full sm:w-auto">
+      <button
+        id="cd-start-btn"
+        aria-label="Start countdown"
+        aria-pressed="false"
+        class="px-8 py-3 rounded-xl text-xl font-bold bg-green-500 hover:bg-green-600 text-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors min-w-[120px]"
+      >
+        Start
+      </button>
+      <button
+        id="cd-dismiss-btn"
+        aria-label="Dismiss alarm"
+        class="hidden px-8 py-3 rounded-xl text-xl font-bold bg-yellow-500 hover:bg-yellow-600 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors min-w-[120px]"
+      >
+        Dismiss
+      </button>
+      <button
+        id="cd-reset-btn"
+        aria-label="Reset countdown"
+        class="px-8 py-3 rounded-xl text-xl font-bold bg-red-500 hover:bg-red-600 text-white focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors min-w-[120px]"
+      >
+        Reset
+      </button>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
